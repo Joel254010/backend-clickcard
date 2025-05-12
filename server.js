@@ -2,13 +2,15 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import empresaRoutes from './empresaRoutes.js'; // Importa as rotas
+import empresaRoutes from './routes/empresaRoutes.js'; // Importa as rotas
+import userRoutes from './routes/userRoutes.js';
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use('/api/usuarios', userRoutes);
 
 // Rota de teste
 app.get('/', (req, res) => {
