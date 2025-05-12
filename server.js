@@ -1,7 +1,8 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const cors = require('cors');
+import express from 'express';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import empresaRoutes from './empresaRoutes.js'; // Importa as rotas
 
 dotenv.config();
 
@@ -14,7 +15,10 @@ app.get('/', (req, res) => {
   res.send('🚀 Backend ClickCard está rodando com sucesso!');
 });
 
-// Conexão com o MongoDB Atlas
+// Usa a rota de empresas
+app.use('/empresas', empresaRoutes);
+
+// Conexão com MongoDB Atlas
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -24,7 +28,7 @@ mongoose.connect(process.env.MONGO_URI, {
   console.error("❌ Erro ao conectar no MongoDB Atlas:", err);
 });
 
-// Porta dinâmica
+// Porta dinâmica (Render ou local)
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando na porta ${PORT}`);
