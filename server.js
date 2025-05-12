@@ -1,7 +1,7 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import cors from 'cors';
+const express = require('express');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const cors = require('cors');
 
 dotenv.config();
 
@@ -24,7 +24,7 @@ mongoose.connect(process.env.MONGO_URI, {
   console.error("❌ Erro ao conectar no MongoDB Atlas:", err);
 });
 
-// Porta dinâmica (para Render ou local)
+// Porta dinâmica
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando na porta ${PORT}`);
