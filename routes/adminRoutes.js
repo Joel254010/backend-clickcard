@@ -1,10 +1,11 @@
-const express = require("express");
-const router = express.Router();
-const Admin = require("../models/AdminModel");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+import express from "express";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import Admin from "../models/AdminModel.js";
 
-// Rota POST: /api/admin/login
+const router = express.Router();
+
+// POST /api/admin/login
 router.post("/login", async (req, res) => {
   const { usuario, senha } = req.body;
 
@@ -29,4 +30,4 @@ router.post("/login", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
