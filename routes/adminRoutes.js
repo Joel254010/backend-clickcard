@@ -26,7 +26,8 @@ router.post("/login", async (req, res) => {
 
     res.status(200).json({ message: "Login realizado com sucesso", token });
   } catch (error) {
-    res.status(500).json({ message: "Erro no login", error });
+    console.error("🔴 Erro interno no login:", error); // log no console do Render
+    res.status(500).json({ message: "Erro no login", error: error.message }); // mostra o erro real
   }
 });
 
