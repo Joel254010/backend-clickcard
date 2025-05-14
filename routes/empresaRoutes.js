@@ -1,21 +1,21 @@
+// routes/empresaRoutes.js
 import express from 'express';
-import mongoose from 'mongoose';
+import Empresa from '../models/Empresa.js';
 
 const router = express.Router();
 
-// Modelo de empresa
-const empresaSchema = new mongoose.Schema({
-  nome: String,
-  cidade: String,
-  estado: String,
-  segmento: String,
-  foto: String,
-  linkCartao: String,
+// GET /api/empresas - Listar empresas
+router.get('/', async (req, res) => {
+  try {
+    const empresas = await Empresa.find().sort({ _id: -1 });
+    res.json(empresas);
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao buscar empresas' });
+  }
 });
-const Empresa = mongoose.model('Empresa', empresaSchema);
 
-// Rota para cadastrar nova empresa
-router.post('/nova', async (req, res) => {
+// POST /api/empresas - Criar nova empresa
+router.post('/', async (req, res) => {
   try {
     const novaEmpresa = new Empresa(req.body);
     const salva = await novaEmpresa.save();
@@ -25,13 +25,25 @@ router.post('/nova', async (req, res) => {
   }
 });
 
-// Rota para listar empresas
-router.get('/', async (req, res) => {
+// PUT /api/empresas/:id - Atualizar empresa
+router.put('/:id', async (req, res) => {
   try {
-    const empresas = await Empresa.find().sort({ _id: -1 });
-    res.json(empresas);
+    const atualizada = await Empresa.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    res.json(atualizada);
   } catch (error) {
-    res.status(500).json({ erro: 'Erro ao buscar empresas' });
+    res.status(500).json({ erro: 'Erro ao atualizar empresa' });
+  }
+});
+
+// DELETE /api/empresas/:id - Excluir empresa
+router.delete('/:id', async (req, res) => {
+  try {
+    await Empresa.findByIdAndDelete(req.params.id);
+    res.json({ mensagem: 'Empresa excluída com sucesso' });
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao excluir empresa' });
   }
 });
 

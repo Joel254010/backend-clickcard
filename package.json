@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "backup": "node backup.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +20,7 @@
     "mongoose": "^8.14.2"
   },
   "devDependencies": {
-    "bestzip": "^2.2.1"
+    "bestzip": "^2.2.1",
+    "nodemon": "^3.1.10"
   }
 }

@@ -29,9 +29,19 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ erro: 'Credenciais inválidas' });
     }
 
-    res.json({ token: 'login-simples', usuario: user.nome });
+    res.json({ token: 'login-simples', nome: user.nome }); // ✅ ajustado nome
   } catch (error) {
     res.status(500).json({ erro: 'Erro ao fazer login' });
+  }
+});
+
+// ✅ Nova rota: listar todos os usuários
+router.get('/', async (req, res) => {
+  try {
+    const usuarios = await User.find().select('-senha'); // não retorna a senha
+    res.json(usuarios);
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao buscar usuários' });
   }
 });
 
