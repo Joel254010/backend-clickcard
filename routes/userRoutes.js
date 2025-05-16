@@ -1,9 +1,10 @@
+// src/routes/userRoutes.js
 import express from 'express';
 import User from '../models/User.js';
 
 const router = express.Router();
 
-// Cadastrar novo usuário
+// ✅ Cadastrar novo usuário
 router.post('/cadastro', async (req, res) => {
   const { nome, email, senha } = req.body;
   try {
@@ -20,7 +21,7 @@ router.post('/cadastro', async (req, res) => {
   }
 });
 
-// Fazer login
+// ✅ Fazer login
 router.post('/login', async (req, res) => {
   const { email, senha } = req.body;
   try {
@@ -29,19 +30,33 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ erro: 'Credenciais inválidas' });
     }
 
-    res.json({ token: 'login-simples', nome: user.nome }); // ✅ ajustado nome
+    res.json({ token: 'login-simples', nome: user.nome });
   } catch (error) {
     res.status(500).json({ erro: 'Erro ao fazer login' });
   }
 });
 
-// ✅ Nova rota: listar todos os usuários
+// ✅ Listar todos os usuários (sem senha)
 router.get('/', async (req, res) => {
   try {
-    const usuarios = await User.find().select('-senha'); // não retorna a senha
+    const usuarios = await User.find().select('-senha');
     res.json(usuarios);
   } catch (error) {
     res.status(500).json({ erro: 'Erro ao buscar usuários' });
+  }
+});
+
+// ✅ Excluir usuário pelo email (com decode)
+router.delete('/:email', async (req, res) => {
+  const email = decodeURIComponent(req.params.email); // 🔥 ESSA LINHA É ESSENCIAL
+  try {
+    const resultado = await User.deleteOne({ email });
+    if (resultado.deletedCount === 0) {
+      return res.status(404).json({ erro: 'Usuário não encontrado' });
+    }
+    res.json({ mensagem: 'Usuário excluído com sucesso' });
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao excluir usuário' });
   }
 });
 
