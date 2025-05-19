@@ -6,6 +6,7 @@ import cors from 'cors';
 import empresaRoutes from './routes/empresaRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import interacoesRoutes from './routes/interacoesRoutes.js'; // ✅ NOVO
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(express.json({ limit: '10mb' })); // suporte a imagens base64
 app.use('/api/empresas', empresaRoutes);
 app.use('/api/usuarios', userRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/interacoes', interacoesRoutes); // ✅ NOVA ROTA DE INTERAÇÕES
 
 // Teste de conexão
 app.get('/', (req, res) => {
