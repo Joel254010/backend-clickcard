@@ -25,9 +25,9 @@ const empresaSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  emailResponsavel: {
+  emailUsuario: {
     type: String,
-    required: true,
+    required: false, // Agora este campo é opcional e serve para vincular o dono do cartão
   },
 }, {
   timestamps: true,
