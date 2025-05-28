@@ -1,5 +1,7 @@
 import express from 'express';
 import Interacao from '../models/Interacao.js';
+import NotificationSubscription from '../models/NotificationSubscription.js';
+import webpush from 'web-push';
 
 const router = express.Router();
 
@@ -27,6 +29,7 @@ router.post('/:empresaId/curtir', async (req, res) => {
       interacao.curtidas = interacao.curtidas.filter((nome) => nome !== nomeUsuario);
     } else {
       interacao.curtidas.push(nomeUsuario);
+      await enviarNotificacao(req.params.empresaId, `${nomeUsuario} curtiu seu cartão de visita.`);
     }
 
     await interacao.save();
@@ -47,6 +50,9 @@ router.post('/:empresaId/comentar', async (req, res) => {
 
     interacao.comentarios.push({ nome, texto });
     await interacao.save();
+
+    await enviarNotificacao(req.params.empresaId, `${nome} comentou: "${texto}"`);
+
     res.json(interacao);
   } catch (error) {
     res.status(500).json({ erro: 'Erro ao comentar' });
@@ -67,5 +73,17 @@ router.delete('/:empresaId/comentario/:index', async (req, res) => {
     res.status(500).json({ erro: 'Erro ao excluir comentário' });
   }
 });
+
+// Função para enviar notificações push
+async function enviarNotificacao(empresaId, mensagem) {
+  try {
+    const sub = await NotificationSubscription.findOne({ empresaId });
+    if (sub) {
+      await webpush.sendNotification(sub.subscription, JSON.stringify({ title: 'Nova Interação', body: mensagem }));
+    }
+  } catch (error) {
+    console.error('Erro ao enviar notificação:', error);
+  }
+}
 
 export default router;
