@@ -1,5 +1,3 @@
-// routes/notificacoesRoutes.js
-
 import express from 'express';
 import mongoose from 'mongoose';
 import NotificationSubscription from '../models/NotificationSubscription.js';
@@ -10,6 +8,9 @@ const router = express.Router();
 router.post('/subscribe', async (req, res) => {
   try {
     const { empresaId, subscription } = req.body;
+
+    // 🔍 LOG para debug
+    console.log("📥 Dados recebidos:", req.body);
 
     if (!empresaId || !subscription) {
       return res.status(400).json({ message: 'empresaId e subscription são obrigatórios.' });
