@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import Interacao from '../models/Interacao.js';
 import NotificationSubscription from '../models/NotificationSubscription.js';
 import webpush from 'web-push';
@@ -11,6 +12,7 @@ router.get('/:empresaId', async (req, res) => {
     const interacao = await Interacao.findOne({ empresaId: req.params.empresaId });
     res.json(interacao || { empresaId: req.params.empresaId, curtidas: [], comentarios: [] });
   } catch (error) {
+    console.error("❌ Erro ao buscar interações:", error);
     res.status(500).json({ erro: 'Erro ao buscar interações' });
   }
 });
@@ -35,6 +37,7 @@ router.post('/:empresaId/curtir', async (req, res) => {
     await interacao.save();
     res.json(interacao);
   } catch (error) {
+    console.error("❌ Erro ao curtir/descurtir:", error);
     res.status(500).json({ erro: 'Erro ao curtir/descurtir' });
   }
 });
@@ -55,6 +58,7 @@ router.post('/:empresaId/comentar', async (req, res) => {
 
     res.json(interacao);
   } catch (error) {
+    console.error("❌ Erro ao comentar:", error);
     res.status(500).json({ erro: 'Erro ao comentar' });
   }
 });
@@ -70,6 +74,7 @@ router.delete('/:empresaId/comentario/:index', async (req, res) => {
     await interacao.save();
     res.json(interacao);
   } catch (error) {
+    console.error("❌ Erro ao excluir comentário:", error);
     res.status(500).json({ erro: 'Erro ao excluir comentário' });
   }
 });
@@ -77,12 +82,23 @@ router.delete('/:empresaId/comentario/:index', async (req, res) => {
 // Função para enviar notificações push
 async function enviarNotificacao(empresaId, mensagem) {
   try {
-    const sub = await NotificationSubscription.findOne({ empresaId });
-    if (sub) {
-      await webpush.sendNotification(sub.subscription, JSON.stringify({ title: 'Nova Interação', body: mensagem }));
+    console.log("🔔 Tentando enviar notificação para empresa:", empresaId);
+    const objectId = new mongoose.Types.ObjectId(empresaId);
+    const sub = await NotificationSubscription.findOne({ empresaId: objectId });
+
+    if (!sub) {
+      console.warn("⚠️ Nenhuma inscrição de notificação encontrada para empresa:", empresaId);
+      return;
     }
+
+    console.log("✅ Inscrição encontrada. Enviando notificação para:", sub.subscription.endpoint);
+    await webpush.sendNotification(
+      sub.subscription,
+      JSON.stringify({ title: 'Nova Interação', body: mensagem })
+    );
+    console.log("📨 Notificação enviada com sucesso.");
   } catch (error) {
-    console.error('Erro ao enviar notificação:', error);
+    console.error("❌ Erro ao enviar notificação:", error);
   }
 }
 
