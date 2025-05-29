@@ -29,8 +29,11 @@ router.post('/:empresaId/curtir', async (req, res) => {
     const jaCurtiu = interacao.curtidas.includes(nomeUsuario);
     if (jaCurtiu) {
       interacao.curtidas = interacao.curtidas.filter((nome) => nome !== nomeUsuario);
+      console.log(`🧹 ${nomeUsuario} removeu curtida.`);
     } else {
       interacao.curtidas.push(nomeUsuario);
+      console.log(`❤️ ${nomeUsuario} curtiu.`);
+      console.log("📨 Tentando enviar notificação de curtida...");
       await enviarNotificacao(req.params.empresaId, `${nomeUsuario} curtiu seu cartão de visita.`);
     }
 
@@ -54,6 +57,8 @@ router.post('/:empresaId/comentar', async (req, res) => {
     interacao.comentarios.push({ nome, texto });
     await interacao.save();
 
+    console.log(`💬 ${nome} comentou: "${texto}"`);
+    console.log("📨 Tentando enviar notificação de comentário...");
     await enviarNotificacao(req.params.empresaId, `${nome} comentou: "${texto}"`);
 
     res.json(interacao);
@@ -79,7 +84,7 @@ router.delete('/:empresaId/comentario/:index', async (req, res) => {
   }
 });
 
-// Função para enviar notificações push
+// Enviar notificação push
 async function enviarNotificacao(empresaId, mensagem) {
   try {
     console.log("🔔 Tentando enviar notificação para empresa:", empresaId);
@@ -87,16 +92,16 @@ async function enviarNotificacao(empresaId, mensagem) {
     const sub = await NotificationSubscription.findOne({ empresaId: objectId });
 
     if (!sub) {
-      console.warn("⚠️ Nenhuma inscrição de notificação encontrada para empresa:", empresaId);
+      console.warn("⚠️ Nenhuma inscrição encontrada no MongoDB para:", empresaId);
       return;
     }
 
-    console.log("✅ Inscrição encontrada. Enviando notificação para:", sub.subscription.endpoint);
+    console.log("📦 Subscription encontrada:", sub.subscription?.endpoint);
     await webpush.sendNotification(
       sub.subscription,
       JSON.stringify({ title: 'Nova Interação', body: mensagem })
     );
-    console.log("📨 Notificação enviada com sucesso.");
+    console.log("✅ Notificação enviada com sucesso!");
   } catch (error) {
     console.error("❌ Erro ao enviar notificação:", error);
   }
