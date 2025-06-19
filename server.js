@@ -11,6 +11,7 @@ import userRoutes from './routes/userRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import interacoesRoutes from './routes/interacoesRoutes.js';
 import notificacoesRoutes from './routes/notificacoesRoutes.js';
+import afiliadoRoutes from './routes/afiliadoRoutes.js'; // ✅ Nova rota
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.use('/api/usuarios', userRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/interacoes', interacoesRoutes);
 app.use('/api/notificacoes', notificacoesRoutes);
+app.use('/api/afiliados', afiliadoRoutes); // ✅ Ativa a API dos afiliados
 
 // Teste de rota raiz
 app.get('/', (req, res) => {
