@@ -16,11 +16,10 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ erro: 'Afiliado não identificado no link' });
     }
 
-    // 📋 Log para depuração
     console.log("🔍 Buscando afiliado com ref:", nomeAfiliado);
     console.log("📡 Dados recebidos:", { email_comprador, valor_total, produto, link_origem });
 
-    // 🔎 Busca mais flexível: verifica se o linkGerado contém o nome do afiliado
+    // 🔎 Busca mais flexível
     const afiliado = await Afiliado.findOne({
       linkGerado: { $regex: new RegExp(`${nomeAfiliado}`, 'i') }
     });
@@ -30,9 +29,12 @@ router.post('/', async (req, res) => {
       return res.status(404).json({ erro: 'Afiliado não encontrado' });
     }
 
-    // Atualiza estatísticas
-    afiliado.estatisticas.vendas += 1;
-    afiliado.estatisticas.comissao += valor_total * 0.5;
+    // ✅ Atualiza as estatísticas com segurança
+    afiliado.estatisticas.vendas = (afiliado.estatisticas.vendas || 0) + 1;
+    afiliado.estatisticas.comissao = (afiliado.estatisticas.comissao || 0) + valor_total * 0.5;
+
+    // 🔧 Garante que o mongoose salve a modificação
+    afiliado.markModified('estatisticas');
 
     await afiliado.save();
 
@@ -46,3 +48,4 @@ router.post('/', async (req, res) => {
 });
 
 export default router;
+
