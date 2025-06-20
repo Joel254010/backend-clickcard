@@ -1,6 +1,7 @@
 // routes/afiliadoRoutes.js
 import express from 'express';
 import Afiliado from '../models/Afiliado.js';
+import CliqueAfiliado from '../models/CliqueAfiliado.js'; // ✅ Importa o modelo de clique
 
 const router = express.Router();
 
@@ -44,6 +45,24 @@ router.delete('/:id', async (req, res) => {
     res.json({ mensagem: 'Afiliado excluído com sucesso' });
   } catch (error) {
     res.status(500).json({ erro: 'Erro ao excluir afiliado' });
+  }
+});
+
+// ✅ POST /api/afiliados/rastrear-clique - Registrar clique do afiliado
+router.post('/rastrear-clique', async (req, res) => {
+  try {
+    const { ref, pagina, data } = req.body;
+
+    if (!ref) {
+      return res.status(400).json({ erro: "Referência do afiliado ausente." });
+    }
+
+    const clique = new CliqueAfiliado({ ref, pagina, data });
+    await clique.save();
+
+    res.status(201).json({ mensagem: "Clique registrado com sucesso." });
+  } catch (error) {
+    res.status(500).json({ erro: "Erro ao registrar clique", detalhe: error.message });
   }
 });
 
