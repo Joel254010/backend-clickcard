@@ -12,7 +12,8 @@ import adminRoutes from './routes/adminRoutes.js';
 import interacoesRoutes from './routes/interacoesRoutes.js';
 import notificacoesRoutes from './routes/notificacoesRoutes.js';
 import afiliadoRoutes from './routes/afiliadoRoutes.js';
-import webhookAppmaxRoutes from './routes/webhookAppmaxRoutes.js'; // 🆕 Webhook Appmax
+import webhookAppmaxRoutes from './routes/webhookAppmaxRoutes.js';
+import cliqueAfiliadoRoutes from './routes/cliqueAfiliadoRoutes.js'; // ✅ NOVA ROTA
 
 dotenv.config();
 
@@ -40,8 +41,9 @@ app.use('/api/usuarios', userRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/interacoes', interacoesRoutes);
 app.use('/api/notificacoes', notificacoesRoutes);
-app.use('/api/afiliados', afiliadoRoutes);               // CRUD + clique de afiliado
-app.use('/api/webhook/appmax', webhookAppmaxRoutes);     // 🆕 vendas via Appmax
+app.use('/api/afiliados', afiliadoRoutes);
+app.use('/api/webhook/appmax', webhookAppmaxRoutes);
+app.use('/api/cliques', cliqueAfiliadoRoutes); // ✅ CLIQUE DO AFILIADO
 
 /* ---------- rota raiz ---------- */
 app.get('/', (req, res) => {
