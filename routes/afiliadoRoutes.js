@@ -26,6 +26,31 @@ router.post('/', async (req, res) => {
   }
 });
 
+// ✅ POST /api/afiliados/login - Login do afiliado
+router.post('/login', async (req, res) => {
+  const { email, senha } = req.body;
+
+  if (!email || !senha) {
+    return res.status(400).json({ erro: 'Email e senha obrigatórios.' });
+  }
+
+  try {
+    const afiliado = await Afiliado.findOne({ email });
+
+    if (!afiliado) {
+      return res.status(404).json({ erro: 'Afiliado não encontrado.' });
+    }
+
+    if (afiliado.senha !== senha) {
+      return res.status(401).json({ erro: 'Senha incorreta.' });
+    }
+
+    res.status(200).json(afiliado);
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao realizar login.', detalhe: error.message });
+  }
+});
+
 // PUT /api/afiliados/:id - Atualizar afiliado
 router.put('/:id', async (req, res) => {
   try {
