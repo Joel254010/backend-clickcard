@@ -78,5 +78,5 @@ app.listen(PORT, () => {
     } else {
       console.warn("⚠️ app._router ainda não está disponível.");
     }
-  }, 500);
+  }, 1500);
 });
