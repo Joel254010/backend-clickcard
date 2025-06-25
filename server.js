@@ -66,4 +66,9 @@ mongoose
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando na porta ${PORT}`);
+  app._router.stack.forEach(layer => {
+    if (layer.route && layer.route.path) {
+      console.log("🔗 Rota ativa:", layer.route.path, "->", layer.route.methods);
+    }
+  });
 });
