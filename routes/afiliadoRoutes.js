@@ -63,6 +63,31 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+// ✅ NOVO: PUT /api/afiliados/:id/comissao - Atualiza comissão paga manualmente
+router.put('/:id/comissao', async (req, res) => {
+  try {
+    const { comissaoPaga } = req.body;
+
+    if (typeof comissaoPaga !== 'number') {
+      return res.status(400).json({ erro: 'O valor de comissão paga deve ser um número.' });
+    }
+
+    const atualizado = await Afiliado.findByIdAndUpdate(
+      req.params.id,
+      { comissaoPaga },
+      { new: true }
+    );
+
+    if (!atualizado) {
+      return res.status(404).json({ erro: 'Afiliado não encontrado.' });
+    }
+
+    res.json(atualizado);
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao atualizar comissão paga', detalhe: error.message });
+  }
+});
+
 // DELETE /api/afiliados/:id - Excluir afiliado
 router.delete('/:id', async (req, res) => {
   try {

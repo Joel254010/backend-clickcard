@@ -45,6 +45,10 @@ const afiliadoSchema = new mongoose.Schema({
       default: 0.0,
     },
   },
+  comissaoPaga: {
+    type: Number,
+    default: 0.0,
+  },
   termoAceito: {
     type: Boolean,
     default: false,
