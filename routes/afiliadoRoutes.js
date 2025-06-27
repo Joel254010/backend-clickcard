@@ -31,9 +31,36 @@ router.get('/', async (req, res) => {
   }
 });
 
+// ✅ POST com verificação de linkGerado único
 router.post('/', async (req, res) => {
   try {
-    const novoAfiliado = new Afiliado(req.body);
+    const { nome, email, telefone, senha, linkGerado } = req.body;
+
+    if (!nome || !email || !telefone || !senha || !linkGerado) {
+      return res.status(400).json({ erro: "Todos os campos são obrigatórios." });
+    }
+
+    // Verifica se o linkGerado já está em uso
+    const existeLink = await Afiliado.findOne({ linkGerado });
+    if (existeLink) {
+      return res.status(400).json({ erro: "Esse nome já está em uso como link de afiliado. Tente outro nome." });
+    }
+
+    // Verifica se o email já está cadastrado
+    const existeEmail = await Afiliado.findOne({ email });
+    if (existeEmail) {
+      return res.status(400).json({ erro: "Já existe um afiliado com esse e-mail." });
+    }
+
+    const novoAfiliado = new Afiliado({
+      nome,
+      email,
+      telefone,
+      senha,
+      linkGerado,
+      termoAceito: true,
+    });
+
     const salvo = await novoAfiliado.save();
     res.status(201).json(salvo);
   } catch (error) {

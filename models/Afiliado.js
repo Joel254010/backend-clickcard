@@ -1,4 +1,3 @@
-// models/Afiliado.js
 import mongoose from 'mongoose';
 
 const afiliadoSchema = new mongoose.Schema({
@@ -21,6 +20,7 @@ const afiliadoSchema = new mongoose.Schema({
   },
   linkGerado: {
     type: String,
+    unique: true, // ✅ Impede dois afiliados com o mesmo link
   },
   dadosPagamento: {
     pix: String,
