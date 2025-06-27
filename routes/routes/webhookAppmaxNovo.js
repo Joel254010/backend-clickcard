@@ -1,5 +1,5 @@
 import express from 'express';
-import Afiliado from '../models/Afiliado.js';
+import Afiliado from '../../models/Afiliado.js';
 
 const router = express.Router();
 

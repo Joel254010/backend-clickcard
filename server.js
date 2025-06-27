@@ -12,7 +12,7 @@ import adminRoutes from './routes/adminRoutes.js';
 import interacoesRoutes from './routes/interacoesRoutes.js';
 import notificacoesRoutes from './routes/notificacoesRoutes.js';
 import afiliadoRoutes from './routes/afiliadoRoutes.js';
-import webhookAppmaxRoutes from './routes/webhookAppmaxRoutes.js';
+import webhookAppmaxRoutes from './routes/routes/webhookAppmaxNovo.js';
 import cliqueAfiliadoRoutes from './routes/cliqueAfiliadoRoutes.js'; // ✅ NOVA ROTA
 
 dotenv.config();
