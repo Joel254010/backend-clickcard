@@ -8,7 +8,12 @@ router.post('/', async (req, res) => {
   console.log("📦 Body:", JSON.stringify(req.body, null, 2));
 
   try {
-    const { email_comprador, valor_total, produto, link_origem } = req.body;
+    const { data } = req.body;
+
+    const email_comprador = data?.customer?.email || '';
+    const valor_total = Number(data?.total) || 0;
+    const produto = data?.bundles?.[0]?.name || 'Produto não identificado';
+    const link_origem = data?.customer?.visited_url || '';
 
     let nomeAfiliado = null;
 
@@ -22,6 +27,7 @@ router.post('/', async (req, res) => {
     }
 
     if (!nomeAfiliado) {
+      console.warn("⚠️ Afiliado não identificado no link.");
       return res.status(400).json({ erro: 'Afiliado não identificado no link' });
     }
 
@@ -37,12 +43,10 @@ router.post('/', async (req, res) => {
       return res.status(404).json({ erro: 'Afiliado não encontrado' });
     }
 
-    const valorConvertido = Number(valor_total);
-
     afiliado.estatisticas = {
       ...afiliado.estatisticas,
       vendas: (afiliado.estatisticas?.vendas || 0) + 1,
-      comissao: (afiliado.estatisticas?.comissao || 0) + (valorConvertido * 0.5),
+      comissao: (afiliado.estatisticas?.comissao || 0) + (valor_total * 0.5),
     };
 
     afiliado.markModified('estatisticas');
