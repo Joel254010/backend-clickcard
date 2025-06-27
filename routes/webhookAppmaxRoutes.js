@@ -1,3 +1,9 @@
+// routes/webhookAppmaxRoutes.js
+import express from 'express';
+import Afiliado from '../models/Afiliado.js';
+
+const router = express.Router();
+
 router.post('/', async (req, res) => {
   try {
     const { email_comprador, valor_total, produto, link_origem } = req.body;
@@ -47,3 +53,7 @@ router.post('/', async (req, res) => {
     res.status(500).json({ erro: 'Erro interno ao registrar venda' });
   }
 });
+
+// ✅ Exportação compatível com o server.js
+const webhookAppmaxRoutes = router;
+export default webhookAppmaxRoutes;
