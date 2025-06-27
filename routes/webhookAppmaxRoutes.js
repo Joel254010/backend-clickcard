@@ -1,27 +1,23 @@
-// routes/webhookAppmaxRoutes.js
 import express from 'express';
 import Afiliado from '../models/Afiliado.js';
 
 const router = express.Router();
 
-// POST /api/webhook/appmax
 router.post('/', async (req, res) => {
   try {
     const { email_comprador, valor_total, produto, link_origem } = req.body;
 
-    // 🔍 Extrai nome do afiliado a partir do ?ref=nome
+    // ✅ Extrai afiliado tanto com ?ref= como com ?aff=
     const url = new URL(link_origem);
-    const nomeAfiliado = url.searchParams.get("ref");
+    const nomeAfiliado = url.searchParams.get("ref") || url.searchParams.get("aff");
 
     if (!nomeAfiliado) {
       return res.status(400).json({ erro: 'Afiliado não identificado no link' });
     }
 
-    // 📋 Log para depuração
-    console.log("🔍 Buscando afiliado com ref:", nomeAfiliado);
+    console.log("🔍 Afiliado identificado:", nomeAfiliado);
     console.log("📡 Dados recebidos:", { email_comprador, valor_total, produto, link_origem });
 
-    // 🔎 Busca por linkGerado que contenha o nome do afiliado
     const afiliado = await Afiliado.findOne({
       linkGerado: { $regex: new RegExp(`${nomeAfiliado}`, 'i') }
     });
@@ -31,7 +27,6 @@ router.post('/', async (req, res) => {
       return res.status(404).json({ erro: 'Afiliado não encontrado' });
     }
 
-    // ✅ Atualiza estatísticas com segurança
     afiliado.estatisticas = {
       ...afiliado.estatisticas,
       vendas: (afiliado.estatisticas?.vendas || 0) + 1,
@@ -39,7 +34,6 @@ router.post('/', async (req, res) => {
     };
 
     afiliado.markModified('estatisticas');
-
     await afiliado.save();
 
     console.log("✅ Venda registrada com sucesso para afiliado:", afiliado.nome);
