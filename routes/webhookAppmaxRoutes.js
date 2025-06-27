@@ -1,15 +1,18 @@
-import express from 'express';
-import Afiliado from '../models/Afiliado.js';
-
-const router = express.Router();
-
 router.post('/', async (req, res) => {
   try {
     const { email_comprador, valor_total, produto, link_origem } = req.body;
 
-    // ✅ Extrai afiliado tanto com ?ref= como com ?aff=
-    const url = new URL(link_origem);
-    const nomeAfiliado = url.searchParams.get("ref") || url.searchParams.get("aff");
+    let nomeAfiliado = null;
+
+    // ✅ Garante que só tenta usar URL se link_origem estiver definido
+    if (link_origem) {
+      try {
+        const url = new URL(link_origem);
+        nomeAfiliado = url.searchParams.get("ref") || url.searchParams.get("aff");
+      } catch (err) {
+        console.error("🌐 URL inválida recebida:", link_origem);
+      }
+    }
 
     if (!nomeAfiliado) {
       return res.status(400).json({ erro: 'Afiliado não identificado no link' });
@@ -44,5 +47,3 @@ router.post('/', async (req, res) => {
     res.status(500).json({ erro: 'Erro interno ao registrar venda' });
   }
 });
-
-export default router;
