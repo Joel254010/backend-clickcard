@@ -1,16 +1,17 @@
-// routes/webhookAppmaxRoutes.js
 import express from 'express';
 import Afiliado from '../models/Afiliado.js';
 
 const router = express.Router();
 
 router.post('/', async (req, res) => {
+  console.log("🎯 Webhook Appmax recebido!");
+  console.log("📦 Body:", JSON.stringify(req.body, null, 2));
+
   try {
     const { email_comprador, valor_total, produto, link_origem } = req.body;
 
     let nomeAfiliado = null;
 
-    // ✅ Garante que só tenta usar URL se link_origem estiver definido
     if (link_origem) {
       try {
         const url = new URL(link_origem);
@@ -36,10 +37,12 @@ router.post('/', async (req, res) => {
       return res.status(404).json({ erro: 'Afiliado não encontrado' });
     }
 
+    const valorConvertido = Number(valor_total);
+
     afiliado.estatisticas = {
       ...afiliado.estatisticas,
       vendas: (afiliado.estatisticas?.vendas || 0) + 1,
-      comissao: (afiliado.estatisticas?.comissao || 0) + (valor_total * 0.5),
+      comissao: (afiliado.estatisticas?.comissao || 0) + (valorConvertido * 0.5),
     };
 
     afiliado.markModified('estatisticas');
@@ -54,6 +57,4 @@ router.post('/', async (req, res) => {
   }
 });
 
-// ✅ Exportação compatível com o server.js
-const webhookAppmaxRoutes = router;
-export default webhookAppmaxRoutes;
+export default router;
