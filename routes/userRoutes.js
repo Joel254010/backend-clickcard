@@ -4,16 +4,16 @@ import User from '../models/User.js';
 
 const router = express.Router();
 
-// ✅ Cadastrar novo usuário
+// ✅ Cadastrar novo usuário (agora com telefone)
 router.post('/cadastro', async (req, res) => {
-  const { nome, email, senha } = req.body;
+  const { nome, email, senha, telefone } = req.body; // inclui telefone
   try {
     const userExistente = await User.findOne({ email });
     if (userExistente) {
       return res.status(400).json({ erro: 'Email já cadastrado' });
     }
 
-    const novoUser = new User({ nome, email, senha });
+    const novoUser = new User({ nome, email, senha, telefone }); // inclui telefone
     await novoUser.save();
     res.status(201).json({ mensagem: 'Usuário cadastrado com sucesso!' });
   } catch (error) {
