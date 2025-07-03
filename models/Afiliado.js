@@ -20,16 +20,15 @@ const afiliadoSchema = new mongoose.Schema({
   },
   linkGerado: {
     type: String,
-    unique: true, // ✅ Impede dois afiliados com o mesmo link
+    unique: true, // ✅ Impede duplicidade de link de afiliado
   },
-  dadosPagamento: {
-    pix: String,
-    banco: String,
-    agencia: String,
-    conta: String,
-    tipoConta: String,
-    nomeTitular: String,
-    cpfTitular: String,
+  termoAceito: {
+    type: Boolean,
+    default: false,
+  },
+  comissaoPaga: {
+    type: Number,
+    default: 0.0,
   },
   estatisticas: {
     indicacoes: {
@@ -45,16 +44,17 @@ const afiliadoSchema = new mongoose.Schema({
       default: 0.0,
     },
   },
-  comissaoPaga: {
-    type: Number,
-    default: 0.0,
-  },
-  termoAceito: {
-    type: Boolean,
-    default: false,
+  dadosPagamento: {
+    pix: String,
+    banco: String,
+    agencia: String,
+    conta: String,
+    tipoConta: String,
+    nomeTitular: String,
+    cpfTitular: String,
   },
 }, {
-  timestamps: true,
+  timestamps: true, // ✅ Adiciona createdAt e updatedAt
 });
 
 const Afiliado = mongoose.model("Afiliado", afiliadoSchema);
