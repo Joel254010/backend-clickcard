@@ -11,11 +11,9 @@ router.get('/', async (req, res) => {
   if (email) {
     try {
       const afiliado = await Afiliado.findOne({ email });
-
       if (!afiliado) {
         return res.status(404).json({ erro: "Afiliado não encontrado" });
       }
-
       return res.json(afiliado);
     } catch (error) {
       console.error("Erro ao buscar afiliado por email:", error);
@@ -31,7 +29,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ✅ POST com verificação de linkGerado único
+// ✅ POST /api/afiliados (com verificação de duplicidade)
 router.post('/', async (req, res) => {
   try {
     const { nome, email, telefone, senha, linkGerado } = req.body;
@@ -40,13 +38,11 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ erro: "Todos os campos são obrigatórios." });
     }
 
-    // Verifica se o linkGerado já está em uso
     const existeLink = await Afiliado.findOne({ linkGerado });
     if (existeLink) {
       return res.status(400).json({ erro: "Esse nome já está em uso como link de afiliado. Tente outro nome." });
     }
 
-    // Verifica se o email já está cadastrado
     const existeEmail = await Afiliado.findOne({ email });
     if (existeEmail) {
       return res.status(400).json({ erro: "Já existe um afiliado com esse e-mail." });
@@ -68,6 +64,7 @@ router.post('/', async (req, res) => {
   }
 });
 
+// ✅ POST /api/afiliados/login
 router.post('/login', async (req, res) => {
   const { email, senha } = req.body;
 
@@ -77,7 +74,6 @@ router.post('/login', async (req, res) => {
 
   try {
     const afiliado = await Afiliado.findOne({ email });
-
     if (!afiliado) {
       return res.status(404).json({ erro: 'Afiliado não encontrado.' });
     }
@@ -92,6 +88,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// ✅ PUT /api/afiliados/:id
 router.put('/:id', async (req, res) => {
   try {
     const atualizado = await Afiliado.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -101,6 +98,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+// ✅ PUT /api/afiliados/:id/comissao
 router.put('/:id/comissao', async (req, res) => {
   try {
     const { comissaoPaga } = req.body;
@@ -125,6 +123,7 @@ router.put('/:id/comissao', async (req, res) => {
   }
 });
 
+// ✅ DELETE /api/afiliados/:id
 router.delete('/:id', async (req, res) => {
   try {
     await Afiliado.findByIdAndDelete(req.params.id);
@@ -134,6 +133,7 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// ✅ POST /api/afiliados/rastrear-clique
 router.post('/rastrear-clique', async (req, res) => {
   try {
     const { ref, pagina, data } = req.body;
@@ -148,6 +148,29 @@ router.post('/rastrear-clique', async (req, res) => {
     res.status(201).json({ mensagem: "Clique registrado com sucesso." });
   } catch (error) {
     res.status(500).json({ erro: "Erro ao registrar clique", detalhe: error.message });
+  }
+});
+
+// ✅ POST /api/afiliados/redefinir-senha
+router.post('/redefinir-senha', async (req, res) => {
+  const { email, novaSenha } = req.body;
+
+  if (!email || !novaSenha) {
+    return res.status(400).json({ erro: 'Email e nova senha são obrigatórios.' });
+  }
+
+  try {
+    const afiliado = await Afiliado.findOne({ email });
+    if (!afiliado) {
+      return res.status(404).json({ erro: 'Afiliado não encontrado.' });
+    }
+
+    afiliado.senha = novaSenha;
+    await afiliado.save();
+
+    res.status(200).json({ mensagem: 'Senha redefinida com sucesso.' });
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao redefinir senha', detalhe: error.message });
   }
 });
 
