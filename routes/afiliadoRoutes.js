@@ -29,14 +29,17 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ✅ POST /api/afiliados (com verificação de duplicidade)
+// ✅ POST /api/afiliados (com geração automática de linkGerado)
 router.post('/', async (req, res) => {
   try {
-    const { nome, email, telefone, senha, linkGerado } = req.body;
+    const { nome, email, telefone, senha } = req.body;
 
-    if (!nome || !email || !telefone || !senha || !linkGerado) {
+    if (!nome || !email || !telefone || !senha) {
       return res.status(400).json({ erro: "Todos os campos são obrigatórios." });
     }
+
+    const nomeAfiliado = nome.toLowerCase().replace(/\s+/g, "");
+    const linkGerado = `https://adquiraoseu.clickcardbusiness.com/?ref=${nomeAfiliado}`;
 
     const existeLink = await Afiliado.findOne({ linkGerado });
     if (existeLink) {
